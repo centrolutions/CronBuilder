@@ -112,6 +112,15 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void OperatorFromString_CreatesValueWithNth_WhenValueIncludesPoundSign()
+        {
+            SectionValue value = "6#2"; //second saturday
+
+            value.Value.Should().Be(6);
+            value.Nth.Should().Be(2);
+        }
+
+        [Test]
         public void OperatorFromString_ThrowsException_WhenValueIsNotQuestionMarkOrAstrisk()
         {
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "a"; });
@@ -231,6 +240,6 @@ namespace CronBuilderTests
             sut.ToString().Should().Be("0-6/2");
         }
 
-        //still need to implement # for week day, day names, and month names
+        //still need to implement day names and month names
     }
 }

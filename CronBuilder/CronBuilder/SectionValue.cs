@@ -16,6 +16,7 @@ namespace CronBuilder
         public int High { get; }
         public bool HasStep { get; }
         public int Step { get; }
+        public int Nth { get; }
 
         public bool IsStar { get { return UnitType == SectionUnitType.Star; } }
         public bool IsQuestion { get { return UnitType == SectionUnitType.Question; } }
@@ -35,10 +36,11 @@ namespace CronBuilder
             High = 0;
             HasStep = false;
             Step = 0;
+            Nth = 0;
         }
         public SectionValue(string value)
         {
-            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-") && !value.Contains("/"))
+            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-") && !value.Contains("/") && !value.Contains("#"))
                 throw new ArgumentException("Invalid characters found in the string.", nameof(value));
 
             UnitType = SectionUnitType.Absolute;
@@ -49,6 +51,7 @@ namespace CronBuilder
             High= 0;
             HasStep = false;
             Step = 0;
+            Nth = 0;
 
             if (value.Contains("/"))
             {
@@ -81,8 +84,21 @@ namespace CronBuilder
                 (Low, High) = ParseRange(value);
             }
 
+            if (value.Contains("#"))
+            {
+                Nth = ParseNthValue(value);
+                value = value.Split('#')[0];
+            }
+
             if (int.TryParse(value, out var numVal))
                 Value = numVal;
+        }
+
+        private int ParseNthValue(string value)
+        {
+            var values = value.Split('#');
+            int.TryParse(values[1], out var val);
+            return val;
         }
 
         private int ParseStep(string value)
