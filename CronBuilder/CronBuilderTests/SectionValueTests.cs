@@ -121,12 +121,36 @@ namespace CronBuilderTests
         }
 
         [Test]
-        public void OperatorFromString_ThrowsException_WhenValueIsNotQuestionMarkOrAstrisk()
+        public void OperatorFromString_ThrowsArgumentException_WhenValueIsNotQuestionMarkOrAstrisk()
         {
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "a"; });
         }
 
-        
+        [Test]
+        public void OperatorFromString_ThrowsArgumentException_WhenValueHasSlashButAMisingNumber()
+        {
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "3/"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "/5"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "/"; });
+        }
+
+        [Test]
+        public void OperatorFromString_ThrowsArgumentException_WhenNthIsMissingNumber()
+        {
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "6#"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "#2"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "#"; });
+        }
+
+        [Test]
+        public void OperatorFromString_ThrowsArgumentException_WhenRangeIsMissingOneOrBothNumbers()
+        {
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "1-"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "-5"; });
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "-"; });
+        }
+
+
 
         [Test]
         public void OperatorFromInt_CreatesAbsolute_WhenValueIsGreaterThanZero()
