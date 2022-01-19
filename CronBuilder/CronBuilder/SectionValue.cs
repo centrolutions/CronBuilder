@@ -14,6 +14,8 @@ namespace CronBuilder
         public bool IsRange { get; private set; }
         public int Low { get; }
         public int High { get; }
+        public bool HasStep { get; }
+        public int Step { get; }
 
         public bool IsStar { get { return UnitType == SectionUnitType.Star; } }
         public bool IsQuestion { get { return UnitType == SectionUnitType.Question; } }
@@ -31,10 +33,12 @@ namespace CronBuilder
             IsRange = false;
             Low = 0;
             High = 0;
+            HasStep = false;
+            Step = 0;
         }
         public SectionValue(string value)
         {
-            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-"))
+            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-") && !value.Contains("/"))
                 throw new ArgumentException("Invalid characters found in the string.", nameof(value));
 
             UnitType = SectionUnitType.Absolute;
@@ -43,6 +47,15 @@ namespace CronBuilder
             IsRange = false;
             Low = 0;
             High= 0;
+            HasStep = false;
+            Step = 0;
+
+            if (value.Contains("/"))
+            {
+                HasStep = true;
+                Step = ParseStep(value);
+                value = value.Split('/')[0];
+            }
 
             if (value == "*")
                 UnitType = SectionUnitType.Star;
@@ -62,11 +75,21 @@ namespace CronBuilder
                 Value = ParseWeekValue(value);
             }
 
-            if (value.Contains("-"))
+            if (value.Contains("-") && !value.StartsWith("L"))
             {
                 IsRange = true;
                 (Low, High) = ParseRange(value);
             }
+
+            if (int.TryParse(value, out var numVal))
+                Value = numVal;
+        }
+
+        private int ParseStep(string value)
+        {
+            var values = value.Split('/');
+            int.TryParse(values[1], out var val);
+            return val;
         }
 
         private (int, int) ParseRange(string value)
@@ -97,29 +120,38 @@ namespace CronBuilder
 
         public override string ToString()
         {
+            string result = null;
             if (IsStar)
-                return "*";
+                result = "*";
+
             if (IsQuestion)
-                return "?";
+                result = "?";
             
             if (IsLast)
             {
                 if (IsWeekday)
-                    return "LW";
+                    result = "LW";
 
                 if (Value < 0)
-                    return $"L{Value}";
+                    result = $"L{Value}";
 
-                return "L";
+                if (string.IsNullOrWhiteSpace(result))
+                    result = "L";
             }
 
-            if (IsWeekday)
-                return $"{Value}W";
+            if (IsWeekday && !IsLast)
+                result = $"{Value}W";
 
             if (IsRange)
-                return $"{Low}-{High}";
+                result = $"{Low}-{High}";
 
-            return Value.ToString();
+            if (string.IsNullOrWhiteSpace(result))
+                result = Value.ToString();
+
+            if (HasStep)
+                result += $"/{Step}";
+
+            return result;
         }
 
         public static implicit operator SectionValue(string val)

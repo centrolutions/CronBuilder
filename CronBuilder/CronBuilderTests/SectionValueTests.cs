@@ -80,6 +80,38 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void OperatorFromString_CreatesStarExpressionWithStep_WhenValueIncludesAstriskAndSlash()
+        {
+            SectionValue value = "*/5";
+
+            value.IsStar.Should().BeTrue();
+            value.HasStep.Should().BeTrue();
+            value.Step.Should().Be(5);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesRangeWithStep_WhenValueIncludesDashAndSlash()
+        {
+            SectionValue value = "0-6/2";
+
+            value.IsRange.Should().BeTrue();
+            value.Low.Should().Be(0);
+            value.High.Should().Be(6);
+            value.HasStep.Should().BeTrue();
+            value.Step.Should().Be(2);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesValueWithStep_WhenValueIncludesTowNumbersSeparatedBySlash()
+        {
+            SectionValue value = "10/2";
+
+            value.Value.Should().Be(10);
+            value.Step.Should().Be(2);
+            value.HasStep.Should().BeTrue();
+        }
+
+        [Test]
         public void OperatorFromString_ThrowsException_WhenValueIsNotQuestionMarkOrAstrisk()
         {
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "a"; });
@@ -183,7 +215,22 @@ namespace CronBuilderTests
             sut.ToString().Should().Be("7-30");
         }
 
+        [Test]
+        public void ToString_ReturnsStarSlashAndNumber_WhenIsStarAndHasStep()
+        {
+            var sut = new SectionValue("*/10");
+
+            sut.ToString().Should().Be("*/10");
+        }
+
+        [Test]
+        public void ToString_ReturnsThreeNumbersSeparatedByDashAndSlash_WhenIsRangeAndHasStep()
+        {
+            var sut = new SectionValue("0-6/2");
+
+            sut.ToString().Should().Be("0-6/2");
+        }
+
         //still need to implement # for week day, day names, and month names
-        // also still need to figure steps (/)
     }
 }
