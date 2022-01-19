@@ -11,6 +11,9 @@ namespace CronBuilder
         public int Value { get; }
         public SectionUnitType UnitType { get; }
         public bool IsWeekday { get; private set; }
+        public bool IsRange { get; private set; }
+        public int Low { get; }
+        public int High { get; }
 
         public bool IsStar { get { return UnitType == SectionUnitType.Star; } }
         public bool IsQuestion { get { return UnitType == SectionUnitType.Question; } }
@@ -20,18 +23,26 @@ namespace CronBuilder
         public SectionValue(int value) : this(value, SectionUnitType.Absolute) { }
         private SectionValue(int value, SectionUnitType unitType)
         {
+            if (value < 0) throw new ArgumentOutOfRangeException(nameof(value), "Cannot be negative");
+
             Value = value;
             UnitType = unitType;
             IsWeekday = false;
+            IsRange = false;
+            Low = 0;
+            High = 0;
         }
         public SectionValue(string value)
         {
-            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W"))
+            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-"))
                 throw new ArgumentException("Invalid characters found in the string.", nameof(value));
 
             UnitType = SectionUnitType.Absolute;
             Value = 0;
             IsWeekday = false;
+            IsRange = false;
+            Low = 0;
+            High= 0;
 
             if (value == "*")
                 UnitType = SectionUnitType.Star;
@@ -50,6 +61,24 @@ namespace CronBuilder
                 IsWeekday = true;
                 Value = ParseWeekValue(value);
             }
+
+            if (value.Contains("-"))
+            {
+                IsRange = true;
+                (Low, High) = ParseRange(value);
+            }
+        }
+
+        private (int, int) ParseRange(string value)
+        {
+            var values = value.Split('-');
+            int.TryParse(values[0], out var first);
+            int.TryParse(values[1], out var second);
+
+            if (first < second)
+                return (first, second);
+            else
+                return (second, first);
         }
 
         private int ParseWeekValue(string value)
@@ -86,6 +115,9 @@ namespace CronBuilder
 
             if (IsWeekday)
                 return $"{Value}W";
+
+            if (IsRange)
+                return $"{Low}-{High}";
 
             return Value.ToString();
         }

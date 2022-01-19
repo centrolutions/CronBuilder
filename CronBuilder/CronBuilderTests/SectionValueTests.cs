@@ -62,6 +62,24 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void OperatorFromString_CreatesRange_WhenValueIsTwoNumbersDividedByDash()
+        {
+            SectionValue value = "1-5";
+
+            value.IsRange.Should().BeTrue();
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesRangeWithLowAndHigh_WhenValueIsTwoNumbersDividedByDash()
+        {
+            SectionValue value = "10-25";
+
+            value.IsRange.Should().BeTrue();
+            value.Low.Should().Be(10);
+            value.High.Should().Be(25);
+        }
+
+        [Test]
         public void OperatorFromString_ThrowsException_WhenValueIsNotQuestionMarkOrAstrisk()
         {
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "a"; });
@@ -75,6 +93,12 @@ namespace CronBuilderTests
             SectionValue value = 2;
 
             value.IsAbsolute.Should().BeTrue();
+        }
+
+        [Test]
+        public void OperatorFromInt_ThrowsException_WhenValueIsLessThanZero()
+        {
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { SectionValue value = -1; });
         }
 
         [Test]
@@ -142,5 +166,24 @@ namespace CronBuilderTests
 
             sut.ToString().Should().Be("3W");
         }
+
+        [Test]
+        public void ToString_ReturnsTwoNumbersSeparatedByDash_WhenIsRangeInCorrectOrder()
+        {
+            var sut = new SectionValue("9-12");
+
+            sut.ToString().Should().Be("9-12");
+        }
+
+        [Test]
+        public void ToString_ReturnsTwoNumbersSeparatedByDash_WhenIsRangeInWrongOrder()
+        {
+            var sut = new SectionValue("30-7");
+
+            sut.ToString().Should().Be("7-30");
+        }
+
+        //still need to implement # for week day, day names, and month names
+        // also still need to figure steps (/)
     }
 }
