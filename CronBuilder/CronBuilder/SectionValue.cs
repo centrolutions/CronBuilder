@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CronBuilder
 {
@@ -21,7 +17,7 @@ namespace CronBuilder
         public bool IsStar { get { return UnitType == SectionUnitType.Star; } }
         public bool IsQuestion { get { return UnitType == SectionUnitType.Question; } }
         public bool IsAbsolute { get { return UnitType == SectionUnitType.Absolute; } }
-        public bool IsLast {  get {  return UnitType == SectionUnitType.Last;} }
+        public bool IsLast { get { return UnitType == SectionUnitType.Last; } }
 
         public SectionValue(int value) : this(value, SectionUnitType.Absolute) { }
         private SectionValue(int value, SectionUnitType unitType)
@@ -48,7 +44,7 @@ namespace CronBuilder
             IsWeekday = false;
             IsRange = false;
             Low = 0;
-            High= 0;
+            High = 0;
             HasStep = false;
             Step = 0;
             Nth = 0;
@@ -174,7 +170,7 @@ namespace CronBuilder
 
             if (IsQuestion)
                 result = "?";
-            
+
             if (IsLast)
             {
                 if (IsWeekday)

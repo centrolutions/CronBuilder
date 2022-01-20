@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CronBuilder
+﻿namespace CronBuilder
 {
     public class Expression : IExpression
     {
