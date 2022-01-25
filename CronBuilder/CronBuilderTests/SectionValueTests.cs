@@ -121,6 +121,25 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void OperatorFromString_CreatesValueWithDayNumber_WhenValueIncludesDayName()
+        {
+            SectionValue value = "MON#3"; //third monday
+
+            value.Value.Should().Be(1);
+            value.Nth.Should().Be(3);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesRangeWithDayNumber_WhenValueIncludesDayNames()
+        {
+            SectionValue value = "MON-FRI";
+
+            value.IsRange.Should().BeTrue();
+            value.Low.Should().Be(1);
+            value.High.Should().Be(5);
+        }
+
+        [Test]
         public void OperatorFromString_ThrowsArgumentException_WhenValueIsNotQuestionMarkOrAstrisk()
         {
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "a"; });
@@ -264,6 +283,6 @@ namespace CronBuilderTests
             sut.ToString().Should().Be("0-6/2");
         }
 
-        //still need to implement day names and month names
+        //still need to implement month names
     }
 }

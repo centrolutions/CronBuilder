@@ -1,9 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CronBuilder
 {
     public struct SectionValue
     {
+        private static readonly Dictionary<string, int> _Days = new Dictionary<string, int>()
+        {
+            { "SUN", 0 },
+            { "MON", 1 },
+            { "TUE", 2 },
+            { "WED", 3 },
+            { "THU", 4 },
+            { "FRI", 5 },
+            { "SAT", 6 },
+        };
+
         public int Value { get; }
         public SectionUnitType UnitType { get; }
         public bool IsWeekday { get; private set; }
@@ -94,6 +106,8 @@ namespace CronBuilder
 
             if (int.TryParse(value, out var numVal))
                 Value = numVal;
+            else if (_Days.ContainsKey(value))
+                Value = _Days[value];
         }
 
         private bool IsValidNth(string value)
@@ -139,8 +153,11 @@ namespace CronBuilder
         private (int, int) ParseRange(string value)
         {
             var values = value.Split('-');
-            int.TryParse(values[0], out var first);
-            int.TryParse(values[1], out var second);
+            if (!int.TryParse(values[0], out var first) && _Days.ContainsKey(values[0]))
+                first = _Days[values[0]];
+
+            if (!int.TryParse(values[1], out var second) && _Days.ContainsKey(values[1]))
+                second = _Days[values[1]];
 
             if (first < second)
                 return (first, second);
