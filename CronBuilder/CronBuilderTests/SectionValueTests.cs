@@ -112,6 +112,16 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void OperatorFromString_CreatesValueWithStep_WhenValueIncludesMonthNameAndSlash()
+        {
+            SectionValue value = "JAN/3";
+
+            value.Value.Should().Be(1);
+            value.Step.Should().Be(3);
+            value.HasStep.Should().BeTrue();
+        }
+
+        [Test]
         public void OperatorFromString_CreatesValueWithNth_WhenValueIncludesPoundSign()
         {
             SectionValue value = "6#2"; //second saturday
@@ -137,6 +147,32 @@ namespace CronBuilderTests
             value.IsRange.Should().BeTrue();
             value.Low.Should().Be(1);
             value.High.Should().Be(5);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesNumericValue_WhenValueIncludesDayName()
+        {
+            SectionValue value = "THU";
+
+            value.Value.Should().Be(4);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesNumericValue_WhenValueIncludesMonthName()
+        {
+            SectionValue value = "SEP";
+
+            value.Value.Should().Be(9);
+        }
+
+        [Test]
+        public void OperatorFromString_CreatesRange_WhenValueIncludesMonthNames()
+        {
+            SectionValue value = "JUL-DEC";
+
+            value.IsRange.Should().BeTrue();
+            value.Low.Should().Be(7);
+            value.High.Should().Be(12);
         }
 
         [Test]
@@ -282,7 +318,5 @@ namespace CronBuilderTests
 
             sut.ToString().Should().Be("0-6/2");
         }
-
-        //still need to implement month names
     }
 }

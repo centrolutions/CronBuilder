@@ -16,6 +16,16 @@ namespace CronBuilder
             { "SAT", 6 },
         };
 
+        private static readonly Dictionary<string, int> _Months = new Dictionary<string, int>()
+        {
+            { "JAN", 1 }, { "FEB", 2 },
+            { "MAR", 3 }, { "APR", 4 },
+            { "MAY", 5 }, { "JUN", 6 },
+            { "JUL", 7 }, { "AUG", 8 },
+            { "SEP", 9 }, { "OCT", 10 },
+            { "NOV", 11 }, { "DEC", 12 }
+        };
+
         public int Value { get; }
         public SectionUnitType UnitType { get; }
         public bool IsWeekday { get; private set; }
@@ -48,7 +58,10 @@ namespace CronBuilder
         }
         public SectionValue(string value)
         {
-            if (value != "*" && value != "?" && !value.Contains("L") && !value.Contains("W") && !value.Contains("-") && !value.Contains("/") && !value.Contains("#"))
+            if (value != "*" && value != "?" && !value.Contains("L")
+                    && !value.Contains("W") && !value.Contains("-")
+                    && !value.Contains("/") && !value.Contains("#")
+                    && !_Days.ContainsKey(value) && !_Months.ContainsKey(value))
                 throw new ArgumentException("Invalid characters found in the string.", nameof(value));
 
             UnitType = SectionUnitType.Absolute;
@@ -108,6 +121,8 @@ namespace CronBuilder
                 Value = numVal;
             else if (_Days.ContainsKey(value))
                 Value = _Days[value];
+            else if (_Months.ContainsKey(value))
+                Value = _Months[value];
         }
 
         private bool IsValidNth(string value)
@@ -153,11 +168,23 @@ namespace CronBuilder
         private (int, int) ParseRange(string value)
         {
             var values = value.Split('-');
-            if (!int.TryParse(values[0], out var first) && _Days.ContainsKey(values[0]))
-                first = _Days[values[0]];
+            if (!int.TryParse(values[0], out var first))
+            {
+                if (_Days.ContainsKey(values[0]))
+                    first = _Days[values[0]];
 
-            if (!int.TryParse(values[1], out var second) && _Days.ContainsKey(values[1]))
-                second = _Days[values[1]];
+                if (_Months.ContainsKey(values[0]))
+                    first = _Months[values[0]];
+            }
+
+            if (!int.TryParse(values[1], out var second))
+            {
+                if (_Days.ContainsKey(values[1]))
+                    second = _Days[values[1]];
+
+                if (_Months.ContainsKey(values[1]))
+                    second = _Months[values[1]];
+            }
 
             if (first < second)
                 return (first, second);
