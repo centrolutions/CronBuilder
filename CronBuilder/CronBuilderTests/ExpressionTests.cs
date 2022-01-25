@@ -26,6 +26,28 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void Minutes_SetsMultipleMinuteValues_WhenCalledMoreThanOnce()
+        {
+            int min1 = 15;
+            int min2 = 45;
+            var expected = "15,45 * * * *";
+
+            var result = _Sut.Minutes(min1).Minutes(min2).Build();
+
+            result.Should().Be(expected);
+        }
+
+        [Test]
+        public void Minutes_SetsMultipleMinuteValues_WhenMixOfNumbersAndStrings()
+        {
+            var expected = "30,15-45/2 * * * *";
+
+            var result = _Sut.Minutes(30).Minutes("45-15/2").Build();
+
+            result.Should().Be(expected);
+        }
+
+        [Test]
         public void Hours_SetsHoursToSingleNumber_WhenANumberIsPassed()
         {
             int hours = 10;
