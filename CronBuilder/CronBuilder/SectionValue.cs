@@ -144,7 +144,8 @@ namespace CronBuilder
         private bool IsValidStep(string value)
         {
             var values = value.Split('/');
-            if (values.Length < 2 || values.Length > 2 || string.IsNullOrWhiteSpace(values[0]) || string.IsNullOrWhiteSpace(values[1]))
+            if (values.Length < 2 || values.Length > 2 || string.IsNullOrWhiteSpace(values[0]) || string.IsNullOrWhiteSpace(values[1])
+                || !int.TryParse(values[1], out int stepVal) || stepVal <= 0)
                 return false;
 
             return true;

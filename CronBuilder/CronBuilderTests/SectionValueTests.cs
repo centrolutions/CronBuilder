@@ -2,10 +2,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CronBuilderTests
 {
@@ -187,6 +183,18 @@ namespace CronBuilderTests
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "3/"; });
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "/5"; });
             Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "/"; });
+        }
+
+        [Test]
+        public void OperatorFromString_ThrowsArgumentException_WhenStepIsNotANumber()
+        {
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "10/a"; });
+        }
+
+        [Test]
+        public void OperatorFromString_ThrowsArgumentException_WhenStepIsLessThan1()
+        {
+            Assert.Throws(typeof(ArgumentException), () => { SectionValue value = "10/0"; });
         }
 
         [Test]

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CronBuilder
@@ -6,7 +7,7 @@ namespace CronBuilder
     public class Expression : IExpression
     {
         List<SectionValue> _Minutes = new List<SectionValue>() { "*" };
-        int _Hours;
+        List<SectionValue> _Hours = new List<SectionValue>() { "*" };
 
         public IExpression Minutes(int minutes)
         {
@@ -15,6 +16,9 @@ namespace CronBuilder
 
         public IExpression Minutes(SectionValue value)
         {
+            if (!IsValidMinutes(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
             if (_Minutes.Count == 1 && _Minutes[0].IsStar)
                 _Minutes.Clear();
 
@@ -24,15 +28,48 @@ namespace CronBuilder
 
         public IExpression Hours(int hours)
         {
-            _Hours = hours;
+            return Hours(new SectionValue(hours));            
+        }
+
+        public IExpression Hours(SectionValue value)
+        {
+            if (!IsValidHours(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_Hours.Count == 1 && _Hours[0].IsStar)
+                _Hours.Clear();
+
+            _Hours.Add(value);
             return this;
         }
 
         public string Build()
         {
             var minutesSection = string.Join(",", _Minutes.Select(x => x.ToString()));
-            var hoursSection = (_Hours == 0) ? "*" : _Hours.ToString();
+            var hoursSection = string.Join(",", _Hours.Select(x => x.ToString()));
             return $"{minutesSection} {hoursSection} * * *";
+        }
+
+
+
+        private bool IsValidMinutes(SectionValue value)
+        {
+            return value.Value <= 60 &&
+                value.Step <= 60 &&
+                value.Nth == 0 &&
+                !value.IsLast &&
+                !value.IsWeekday &&
+                !value.IsQuestion;
+        }
+
+        private bool IsValidHours(SectionValue value)
+        {
+            return value.Value <= 23 &&
+                value.Step <= 23 &&
+                value.Nth == 0 &&
+                !value.IsLast &&
+                !value.IsWeekday &&
+                !value.IsQuestion;
         }
     }
 }

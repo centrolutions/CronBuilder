@@ -1,10 +1,15 @@
-using CronBuilder;
+﻿using CronBuilder;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CronBuilderTests
 {
-    public class ExpressionTests
+    public class ExpressionMinutesTests
     {
         Expression _Sut;
 
@@ -48,14 +53,24 @@ namespace CronBuilderTests
         }
 
         [Test]
-        public void Hours_SetsHoursToSingleNumber_WhenANumberIsPassed()
+        public void Minutes_ThrowsArgumentOutOfRangeException_WhenResultingValueIsGreaterThan60()
         {
-            int hours = 10;
-            var expected = "* 10 * * *";
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes(61); });
+        }
 
-            var result = _Sut.Hours(hours).Build();
+        [Test]
+        public void Minutes_ThrowsArgumentOutOfRangeException_WhenStepIsGreaterThan60()
+        {
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes("30/65"); });
+        }
 
-            result.Should().Be(expected);
+        [Test]
+        public void Minutes_ThrowsArgumentOutOfRangeException_WhenNthOrLastOrWeekdayOrQuestionIsUsed()
+        {
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes("30#1"); });
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes("L"); });
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes("W"); });
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.Minutes("?"); });
         }
     }
 }
