@@ -10,6 +10,8 @@
         IExpression DayOfMonth(SectionValue value);
         IExpression Months(int month);
         IExpression Months(SectionValue value);
+        IExpression DayOfWeek(int day);
+        IExpression DayOfWeek(SectionValue value);
 
         string Build();
     }

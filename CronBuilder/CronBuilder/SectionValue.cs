@@ -245,6 +245,9 @@ namespace CronBuilder
             if (HasStep)
                 result += $"/{Step}";
 
+            if (Nth > 0)
+                result += $"#{Nth}";
+
             return result;
         }
 

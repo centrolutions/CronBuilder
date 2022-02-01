@@ -334,5 +334,13 @@ namespace CronBuilderTests
 
             sut.ToString().Should().Be("0-6/2");
         }
+        
+        [Test]
+        public void ToString_ReturnsNumbersSeparatedByPoundSign_WhenNthIsUsed()
+        {
+            var sut = new SectionValue("6#3");
+
+            sut.ToString().Should().Be("6#3");
+        }
     }
 }

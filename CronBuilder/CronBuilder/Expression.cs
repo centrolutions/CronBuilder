@@ -10,6 +10,7 @@ namespace CronBuilder
         List<SectionValue> _Hours = new List<SectionValue>() { "*" };
         List<SectionValue> _DaysOfMonth = new List<SectionValue> { "*" };
         List<SectionValue> _Months = new List<SectionValue>() { "*" };
+        List<SectionValue> _DaysOfWeek = new List<SectionValue>() { "*" };
 
         public IExpression Minutes(int minutes)
         {
@@ -79,13 +80,31 @@ namespace CronBuilder
             return this;
         }
 
+        public IExpression DayOfWeek(int day)
+        {
+            return DayOfWeek(new SectionValue(day));
+        }
+
+        public IExpression DayOfWeek(SectionValue value)
+        {
+            if (!IsValidDayOfWeek(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_DaysOfWeek.Count == 1 && _DaysOfWeek[0].IsStar)
+                _DaysOfWeek.Clear();
+
+            _DaysOfWeek.Add(value);
+            return this;
+        }
+
         public string Build()
         {
             var minutesSection = string.Join(",", _Minutes.Select(x => x.ToString()));
             var hoursSection = string.Join(",", _Hours.Select(x => x.ToString()));
             var daysOfMonthSection = string.Join(",", _DaysOfMonth.Select(x => x.ToString()));
             var monthsSection = string.Join(",", _Months.Select(x => x.ToString()));
-            return $"{minutesSection} {hoursSection} {daysOfMonthSection} {monthsSection} *";
+            var daysOfWeekSection = string.Join(",", _DaysOfWeek.Select(x => x.ToString()));
+            return $"{minutesSection} {hoursSection} {daysOfMonthSection} {monthsSection} {daysOfWeekSection}";
         }
 
 
@@ -126,6 +145,14 @@ namespace CronBuilder
                 !value.IsLast &&
                 !value.IsWeekday &&
                 !value.IsQuestion;
+        }
+
+        private bool IsValidDayOfWeek(SectionValue value)
+        {
+            return value.Value <= 7 &&
+                value.Step <= 7 &&
+                !value.IsWeekday &&
+                value.Nth <= 5;
         }
     }
 }
