@@ -9,6 +9,7 @@ namespace CronBuilder
         List<SectionValue> _Minutes = new List<SectionValue>() { "*" };
         List<SectionValue> _Hours = new List<SectionValue>() { "*" };
         List<SectionValue> _DaysOfMonth = new List<SectionValue> { "*" };
+        List<SectionValue> _Months = new List<SectionValue>() { "*" };
 
         public IExpression Minutes(int minutes)
         {
@@ -61,12 +62,30 @@ namespace CronBuilder
             return this;
         }
 
+        public IExpression Months(int month)
+        {
+            return Months(new SectionValue(month));
+        }
+
+        public IExpression Months(SectionValue value)
+        {
+            if (!IsValidMonth(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_Months.Count == 1 && _Months[0].IsStar)
+                _Months.Clear();
+
+            _Months.Add(value);
+            return this;
+        }
+
         public string Build()
         {
             var minutesSection = string.Join(",", _Minutes.Select(x => x.ToString()));
             var hoursSection = string.Join(",", _Hours.Select(x => x.ToString()));
             var daysOfMonthSection = string.Join(",", _DaysOfMonth.Select(x => x.ToString()));
-            return $"{minutesSection} {hoursSection} {daysOfMonthSection} * *";
+            var monthsSection = string.Join(",", _Months.Select(x => x.ToString()));
+            return $"{minutesSection} {hoursSection} {daysOfMonthSection} {monthsSection} *";
         }
 
 
@@ -97,6 +116,16 @@ namespace CronBuilder
                 (value.Value > 0 || value.IsWeekday || (value.Low > 0 && value.High <= 31)) &&
                 value.Step <= 31 &&
                 value.Nth == 0;
+        }
+
+        private bool IsValidMonth(SectionValue value)
+        {
+            return value.Value <= 12 &&
+                value.Step <= 12 &&
+                value.Nth == 0 &&
+                !value.IsLast &&
+                !value.IsWeekday &&
+                !value.IsQuestion;
         }
     }
 }

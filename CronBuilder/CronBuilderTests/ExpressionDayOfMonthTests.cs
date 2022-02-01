@@ -27,13 +27,13 @@ namespace CronBuilderTests
         }
 
         [Test]
-        public void DayOfMonth_SetsMultipleHourValues_WhenCalledMoreThanOnce()
+        public void DayOfMonth_SetsMultipleDayValues_WhenCalledMoreThanOnce()
         {
-            int hour1 = 10;
-            int hour2 = 12;
+            int day1 = 10;
+            int day2 = 12;
             var expected = "* * 10,12 * *";
 
-            var result = _Sut.DayOfMonth(hour1).DayOfMonth(hour2).Build();
+            var result = _Sut.DayOfMonth(day1).DayOfMonth(day2).Build();
 
             result.Should().Be(expected);
         }
@@ -59,13 +59,13 @@ namespace CronBuilderTests
         }
 
         [Test]
-        public void DayOfMonth_ThrowsArgumentOutOfRangeException_WhenHourIsGreaterThan31()
+        public void DayOfMonth_ThrowsArgumentOutOfRangeException_WhenDayIsGreaterThan31()
         {
             Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.DayOfMonth(32); });
         }
 
         [Test]
-        public void DayOfMonth_ThrowsArgumentOutOfRangeException_WhenHourIsZero()
+        public void DayOfMonth_ThrowsArgumentOutOfRangeException_WhenDayIsZero()
         {
             Assert.Throws(typeof(ArgumentOutOfRangeException), () => { _Sut.DayOfMonth(0); });
         }
