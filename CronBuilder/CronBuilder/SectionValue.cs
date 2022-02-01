@@ -229,7 +229,12 @@ namespace CronBuilder
             }
 
             if (IsWeekday && !IsLast)
-                result = $"{Value}W";
+            {
+                if (Value > 0)
+                    result = $"{Value}W";
+                else
+                    result = "W";
+            }
 
             if (IsRange)
                 result = $"{Low}-{High}";

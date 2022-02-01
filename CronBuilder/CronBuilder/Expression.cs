@@ -8,6 +8,7 @@ namespace CronBuilder
     {
         List<SectionValue> _Minutes = new List<SectionValue>() { "*" };
         List<SectionValue> _Hours = new List<SectionValue>() { "*" };
+        List<SectionValue> _DaysOfMonth = new List<SectionValue> { "*" };
 
         public IExpression Minutes(int minutes)
         {
@@ -43,11 +44,29 @@ namespace CronBuilder
             return this;
         }
 
+        public IExpression DayOfMonth(int day)
+        {
+            return DayOfMonth(new SectionValue(day));
+        }
+
+        public IExpression DayOfMonth(SectionValue value)
+        {
+            if (!IsValidDayOfMonth(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (_DaysOfMonth.Count == 1 && _DaysOfMonth[0].IsStar)
+                _DaysOfMonth.Clear();
+
+            _DaysOfMonth.Add(value);
+            return this;
+        }
+
         public string Build()
         {
             var minutesSection = string.Join(",", _Minutes.Select(x => x.ToString()));
             var hoursSection = string.Join(",", _Hours.Select(x => x.ToString()));
-            return $"{minutesSection} {hoursSection} * * *";
+            var daysOfMonthSection = string.Join(",", _DaysOfMonth.Select(x => x.ToString()));
+            return $"{minutesSection} {hoursSection} {daysOfMonthSection} * *";
         }
 
 
@@ -70,6 +89,14 @@ namespace CronBuilder
                 !value.IsLast &&
                 !value.IsWeekday &&
                 !value.IsQuestion;
+        }
+
+        private bool IsValidDayOfMonth(SectionValue value)
+        {
+            return value.Value <= 31 &&
+                (value.Value > 0 || value.IsWeekday || (value.Low > 0 && value.High <= 31)) &&
+                value.Step <= 31 &&
+                value.Nth == 0;
         }
     }
 }

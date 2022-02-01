@@ -296,6 +296,14 @@ namespace CronBuilderTests
         }
 
         [Test]
+        public void ToString_ReturnsW_WhenIsWeekdayAndValueIsZero()
+        {
+            var sut = new SectionValue("W");
+
+            sut.ToString().Should().Be("W");
+        }
+
+        [Test]
         public void ToString_ReturnsTwoNumbersSeparatedByDash_WhenIsRangeInCorrectOrder()
         {
             var sut = new SectionValue("9-12");
