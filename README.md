@@ -17,7 +17,6 @@ var expression = builder.Minutes(10).Hours("12-23/2").Build(); //every two hours
 // expression = "10 12-23/2 * * *
 ```
 ### Common Expressions using ExpressionFactory
-By default, serial numbers use alpha numerics (letters and numbers / Base-36), but you can change that by using a different encoder.
 ```csharp
 var factory = new ExpressionFactory();
 var expression = factory.DailyAtTime(12, 30).Build(); //every day at 12:30pm
