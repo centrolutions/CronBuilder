@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>CronExpressionBuilder</PackageId>
+    <Authors>Centrolutions</Authors>
+    <Description>Allows you to build cron expressions in a user-friendly manner.</Description>
+    <RepositoryUrl>https://github.com/centrolutions/CronBuilder</RepositoryUrl>
+    <PackageReleaseNotes>Initial release with support for standard cron expressions.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>
